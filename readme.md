@@ -1,68 +1,29 @@
+## Overview
 
-### Prothemeus server
+This repository is a quick installer for prometheus lab with 3 main components:
+1. prometheus server: run on port 9090
+2. node_exporter: which will get and expose machine metrics on port 9100
+3. python application: work as another prometheus target, run on port 8080
 
-> wget https://github.com/prometheus/prometheus/releases/download/v2.51.0-rc.0/prometheus-2.51.0-rc.0.linux-amd64.tar.gz
-> tar -xvzf prometheus-2.51.0-rc.0.linux-amd64.tar.gz -C prometheus-installation
-> export PATH=$PATH:$(pwd)/prometheus-installation/prometheus-2.51.0-rc.0.linux-amd64/
-> source ~/.profile
+All these components are installed inside a virtual box, created by Vagrant.
 
-Create a sample config file prometheus.yml
-```
-global:
-  scrape_interval: 15s
+## Prerequisites
+Your computer should have theses tools:
+- Vagrant
+- VirtualBox
 
-scrape_configs:
-  - job_name: prometheus
-    static_configs:
-      - targets: ["localhost:9090"]
-```
-Run prometheus with this config:
+## How to run
 
-> prometheus --config.file=prometheus.yml
+> vagrant up
 
-### Node exporter
+Check your vagrant log
+![image](https://github.com/Bigguy98/vagrant-prometheus-server-setup/assets/27953500/130e5ebb-4493-4022-90d5-05a38a4d15bd)
 
+Then access the prometheus website at http://localhost:9090
+You'll see something like this:
 
-Install and add node exporter to path
+![image](https://github.com/Bigguy98/vagrant-prometheus-server-setup/assets/27953500/64de58f3-d470-48ce-832a-dd817459282d)
 
-> wget https://github.com/prometheus/node_exporter/releases/download/v1.7.0/node_exporter-1.7.0.linux-amd64.tar.gz
-> tar -xvzf node_exporter-1.7.0.linux-amd64.tar.gz -C prometheus-installation
-> export PATH=$PATH:$(pwd)/prometheus-installation/node_exporter-1.7.0.linux-amd64/
-> source ~/.profile
+Access Status --> Targets to view all targets configured on prometheus.yml file
+![image](https://github.com/Bigguy98/vagrant-prometheus-server-setup/assets/27953500/f34c4d53-be9e-4e58-ba2d-c66ad581e14f)
 
-Node exporter will collect server metrics and expose on port 9100
-
-### Python server
-
-Create python virtual environment
-> python -v venv .venv
-> source .venv/Scripts/active
-
-Run python
-
-> pip install -r requirement.txt 
-> python server.python
-
-Check http://localhost:8000 to view metrics
-
-For more information about Python exporter, access this link: https://prometheus.github.io/client_python/getting-started/three-step-demo/
-
-
-### Add node_exporter and python server to targets
-
-Add sections to prometheus.yml file, it will look like this
-```
-global:
-  scrape_interval: 15s
-
-scrape_configs:
-  - job_name: prometheus
-    static_configs:
-      - targets: ["localhost:9090"]
-  - job_name: node_exporter
-    static_configs:
-      - targets: ["localhost:9100"]
-  - job_name: python_server
-    static_configs:
-      - targets: ["localhost:8000"]
-```
